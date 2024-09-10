@@ -29,19 +29,28 @@ class CalculatorViewModel {
 	private var leftValue: Double = 0
 	private var rightValue: Double = 0
 	private var currentAction: ActionType? = nil
+	private var lastOperation: (Double, ActionType)? = nil
 	
 	func didTapButton(buttonValue: String) -> Double {
-		let currentValue = currentAction != nil ? rightValue : leftValue
+		let currentValue = getCurrentValue()
 		if let buttonNumber = numbers[buttonValue] {
 			let isInt = floor(currentValue) == currentValue
 			
 			if (isInt) {
+				if (currentAction == .comma) {
+					let newValue: Double? = currentValue + (Double("\(0).\(buttonNumber)") ?? 0)
+					
+					return proccessCurrentValue(value: newValue ?? buttonNumber.toDouble(), action: nil)
+				}
+				
 				let newValue = Int("\(Int(currentValue))\(buttonNumber)") ?? buttonNumber
 				
 				return proccessCurrentValue(value: newValue.toDouble(), action: nil)
 			}
 			
-			return proccessCurrentValue(value: currentValue, action: nil)
+			let newValue: Double = Double("\(currentValue)\(buttonNumber)") ?? buttonNumber.toDouble()
+			
+			return proccessCurrentValue(value: newValue, action: nil)
 		}
 		
 		if let buttonAction = actions[buttonValue] {
@@ -61,11 +70,20 @@ class CalculatorViewModel {
 			
 			return leftValue
 		} else if (action == ActionType.calc) {
+			if let lastAction = lastOperation?.1, currentAction == nil {
+				currentAction = lastAction
+			}
+			
+			if let lastRightValue = lastOperation?.0, rightValue == 0 {
+				rightValue = lastRightValue
+			}
+			
 			guard let safeAction = currentAction else {
 				return leftValue
 			}
 			
 			let newValue = calcResult(leftNumber: leftValue, rightNumber: rightValue, action: safeAction)
+			lastOperation = (rightValue, safeAction)
 			leftValue = newValue
 			currentAction = nil
 			rightValue = 0
@@ -73,7 +91,7 @@ class CalculatorViewModel {
 			return leftValue
 		}
 		
-		if (currentAction != nil) {
+		if (currentAction == ActionType.divide || currentAction == ActionType.minus || currentAction == ActionType.multiply || currentAction == ActionType.plus) {
 			if (action != nil) {
 				let newValue = calcResult(leftNumber: leftValue, rightNumber: rightValue, action: action!)
 				leftValue = newValue
@@ -119,6 +137,21 @@ class CalculatorViewModel {
 		}
 		
 		return (newValue, newAction)
+	}
+	
+	private func getCurrentValue() -> Double {
+		return switch currentAction {
+		case .plus:
+			rightValue
+		case .divide:
+			rightValue
+		case .minus:
+			rightValue
+		case .multiply:
+			rightValue
+		default:
+			leftValue
+		}
 	}
 	
 	private func calcResult(leftNumber: Double, rightNumber: Double, action: ActionType) -> Double {

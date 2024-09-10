@@ -19,14 +19,151 @@ final class CalculatorViewControllerTests: XCTestCase {
 		viewModel = nil
 	}
 	
-	func testPlusOperations() throws {
-		testPlusOperationSimple()
-		testPlusOperationSimple2()
+	//MARK: - Actions
+	
+	func testToggleSignAction() {
+		let leftValue = viewModel.didTapButton(buttonValue: "2")
+		
+		XCTAssertEqual(leftValue, 2)
+		
+		let toggleSign = viewModel.didTapButton(buttonValue: "+/-")
+		
+		XCTAssertEqual(toggleSign, -2)
+	}
+	
+	func testPercentAction() {
+		let leftValue = viewModel.didTapButton(buttonValue: "2")
+		
+		XCTAssertEqual(leftValue, 2)
+		
+		let percent = viewModel.didTapButton(buttonValue: "%")
+		
+		XCTAssertEqual(percent, 0.02)
+	}
+	
+	func testClearAction() {
+		let leftValue = viewModel.didTapButton(buttonValue: "2")
+		
+		XCTAssertEqual(leftValue, 2)
+		
+		let clear = viewModel.didTapButton(buttonValue: "AC")
+		
+		XCTAssertEqual(clear, 0)
+	}
+	
+	func testCommaAction() {
+		var leftValue = viewModel.didTapButton(buttonValue: "2")
+		
+		XCTAssertEqual(leftValue, 2)
+		
+		let comma = viewModel.didTapButton(buttonValue: ",")
+		
+		XCTAssertEqual(comma, 2)
+		
+		leftValue = viewModel.didTapButton(buttonValue: "5")
+		
+		XCTAssertEqual(leftValue, 2.5)
+		
+		leftValue = viewModel.didTapButton(buttonValue: "6")
+		
+		XCTAssertEqual(leftValue, 2.56)
+	}
+	
+	//MARK: - Unknow values
+	
+	func testUnknowValue() {
+		let leftValue = viewModel.didTapButton(buttonValue: "some-unknow-value")
+		
+		XCTAssertEqual(leftValue, 0)
+	}
+	
+	//MARK: - Operations
+	
+	func testDivideOperation() {
+		let leftValue = viewModel.didTapButton(buttonValue: "2")
+		
+		XCTAssertEqual(leftValue, 2)
+		
+		let divide = viewModel.didTapButton(buttonValue: "/")
+		
+		XCTAssertEqual(divide, 2)
+		
+		let rightValue = viewModel.didTapButton(buttonValue: "2")
+		
+		XCTAssertEqual(rightValue, 2)
+		
+		let equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 1)
+	}
+	
+	func testMultiplyOperation() {
+		let leftValue = viewModel.didTapButton(buttonValue: "2")
+		
+		XCTAssertEqual(leftValue, 2)
+		
+		let multiply = viewModel.didTapButton(buttonValue: "x")
+		
+		XCTAssertEqual(multiply, 2)
+		
+		let rightValue = viewModel.didTapButton(buttonValue: "5")
+		
+		XCTAssertEqual(rightValue, 5)
+		
+		let equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 10)
+	}
+	
+	func testMinusOperationSimple() {
+		let leftValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(leftValue, 1)
+		
+		let minus = viewModel.didTapButton(buttonValue: "-")
+		
+		XCTAssertEqual(minus, 1)
+		
+		let rightValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(rightValue, 1)
+		
+		let equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 0)
+	}
+	
+	func testMinusOperationDecimal() {
+		let leftValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(leftValue, 1)
+		
+		let comma = viewModel.didTapButton(buttonValue: ",")
+		
+		XCTAssertEqual(comma, 1.0)
+		
+		let updatedLeftValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(updatedLeftValue, 1.1)
+		
+		let minus = viewModel.didTapButton(buttonValue: "-")
+		
+		XCTAssertEqual(minus, 1.1)
+		
+		var rightValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(rightValue, 1)
+		
+		rightValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(rightValue, 11)
+		
+		let equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, -9.9)
 	}
 	
 	func testPlusOperationSimple() {
-		viewModel = CalculatorViewModel()
-		
 		let leftValue = viewModel.didTapButton(buttonValue: "1")
 		
 		XCTAssertEqual(leftValue, 1)
@@ -44,9 +181,65 @@ final class CalculatorViewControllerTests: XCTestCase {
 		XCTAssertEqual(equals, 2)
 	}
 	
-	func testPlusOperationSimple2() {
-		viewModel = CalculatorViewModel()
+	func testPlusOperationDecimal() {
+		let leftValue = viewModel.didTapButton(buttonValue: "1")
 		
+		XCTAssertEqual(leftValue, 1)
+		
+		let comma = viewModel.didTapButton(buttonValue: ",")
+		
+		XCTAssertEqual(comma, 1.0)
+		
+		let updatedLeftValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(updatedLeftValue, 1.1)
+		
+		var plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(plus, 1.1)
+		
+		var rightValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(rightValue, 1)
+		
+		let equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 2.1)
+		
+		plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(equals, 2.1)
+		
+		rightValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(rightValue, 1)
+	}
+	
+	func testSameOperation() {
+		let leftValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(leftValue, 1)
+		
+		var plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(plus, 1)
+		
+		plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(plus, 1)
+		
+		let rightValue = viewModel.didTapButton(buttonValue: "1")
+		
+		plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(plus, 2)
+		
+		plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(plus, 2)
+	}
+	
+	func testCascadeOperations() {
 		let leftValue = viewModel.didTapButton(buttonValue: "1")
 		
 		XCTAssertEqual(leftValue, 1)
@@ -55,12 +248,20 @@ final class CalculatorViewControllerTests: XCTestCase {
 		
 		XCTAssertEqual(plus, 1)
 		
-		let rightValue = viewModel.didTapButton(buttonValue: "2")
+		let rightValue = viewModel.didTapButton(buttonValue: "1")
 		
-		XCTAssertEqual(rightValue, 2)
+		XCTAssertEqual(rightValue, 1)
 		
-		let equals = viewModel.didTapButton(buttonValue: "=")
+		var equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 2)
+		
+		equals = viewModel.didTapButton(buttonValue: "=")
 		
 		XCTAssertEqual(equals, 3)
+		
+		equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 4)
 	}
 }
