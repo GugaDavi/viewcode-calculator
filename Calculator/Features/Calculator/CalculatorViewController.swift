@@ -11,16 +11,12 @@ final class CalculatorViewController: UIViewController {
 	private var calculatorView: CalculatorView? = nil
 	private var calculatorViewModel = CalculatorViewModel()
 	
-	var currentValue: Double = 0
-	var leftValue: Double = 0
-	var rightValue: Double = 0
-	var action: ActionType? = nil
-	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		calculatorView?.buttonsDelegate = self
 		calculatorViewModel = CalculatorViewModel()
+		calculatorViewModel.delegate = self
 	}
 	
 	override func loadView() {
@@ -39,5 +35,13 @@ extension CalculatorViewController: CalculatorButtonViewDelegate {
 			
 			calculatorView?.updateResult(newValue)
 		}
+	}
+}
+
+//MARK: - CalculatorViewModelDelegate
+
+extension CalculatorViewController: CalculatorViewModelDelegate {
+	func onActionChanges(_ newAction: ActionType?) {
+		calculatorView?.selectOperationButton(newAction)
 	}
 }

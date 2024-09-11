@@ -181,6 +181,40 @@ class CalculatorView: UIView {
 		clear.updateTitle(result.text == "0" ? "AC" : "C")
 	}
 	
+	func selectOperationButton(_ actionType: ActionType?) {
+		if actionType == ActionType.divide && !divide.isSelected {
+			divide.runSelectButtonAnimation()
+			unselectOtherButtons(divide)
+		} else if  actionType == ActionType.multiply && !multiply.isSelected {
+			multiply.runSelectButtonAnimation()
+			unselectOtherButtons(multiply)
+		} else if actionType == ActionType.minus && !minus.isSelected {
+			minus.runSelectButtonAnimation()
+			unselectOtherButtons(minus)
+		} else if actionType == ActionType.plus && !plus.isSelected {
+			plus.runSelectButtonAnimation()
+			unselectOtherButtons(plus)
+		} else {
+			unselectOtherButtons()
+		}
+	}
+	
+	private func unselectOtherButtons(_ selectedButton: CalculatorButtonView? = nil) {
+		var operationButtons = [divide, multiply, minus, plus]
+		
+		operationButtons.removeAll { item in
+			return item == selectedButton
+		}
+		
+		operationButtons.forEach { button in
+			if button.isSelected {
+				button.runSelectButtonAnimation()
+			}
+		}
+	}
+	
+	//MARK: - Constraints
+	
 	private func zeroConstraints() {
 		NSLayoutConstraint.activate([
 			zero.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
@@ -350,7 +384,7 @@ extension CalculatorView: ViewCode {
 		equalConstraints()
 		resultConstraints()
 	}
-
+	
 	func addSubviews() {
 		addSubview(one)
 		addSubview(two)

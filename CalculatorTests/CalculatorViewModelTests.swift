@@ -230,6 +230,8 @@ final class CalculatorViewControllerTests: XCTestCase {
 		
 		let rightValue = viewModel.didTapButton(buttonValue: "1")
 		
+		XCTAssertEqual(rightValue, 1)
+		
 		plus = viewModel.didTapButton(buttonValue: "+")
 		
 		XCTAssertEqual(plus, 2)
@@ -263,5 +265,108 @@ final class CalculatorViewControllerTests: XCTestCase {
 		equals = viewModel.didTapButton(buttonValue: "=")
 		
 		XCTAssertEqual(equals, 4)
+	}
+	
+	func testChangeOperation() {
+		_ = viewModel.didTapButton(buttonValue: "1")
+		let leftValue = viewModel.didTapButton(buttonValue: "0")
+		
+		XCTAssertEqual(leftValue, 10)
+		
+		let plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(plus, 10)
+		
+		let divide = viewModel.didTapButton(buttonValue: "/")
+		
+		XCTAssertEqual(divide, 10)
+		
+		let rightValue = viewModel.didTapButton(buttonValue: "2")
+		
+		XCTAssertEqual(rightValue, 2)
+		
+		let equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 5)
+	}
+	
+	func testInitingWithOperation() {
+		var leftValue = viewModel.didTapButton(buttonValue: "/")
+		
+		XCTAssertEqual(leftValue, 0)
+		
+		leftValue = viewModel.didTapButton(buttonValue: "/")
+		
+		XCTAssertEqual(leftValue, 0)
+	}
+	
+	
+	func testCascadeAfterClearOperations() {
+		let leftValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(leftValue, 1)
+		
+		let plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(plus, 1)
+		
+		let rightValue = viewModel.didTapButton(buttonValue: "1")
+		
+		XCTAssertEqual(rightValue, 1)
+		
+		var equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 2)
+		
+		equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 3)
+		
+		let clear = viewModel.didTapButton(buttonValue: "C")
+		
+		XCTAssertEqual(clear, 0)
+		
+		equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 0)
+		
+		equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 0)
+	}
+	
+	func testMultiplesOperations() {
+		_ = viewModel.didTapButton(buttonValue: "1")
+		let leftValue = viewModel.didTapButton(buttonValue: "0")
+		
+		XCTAssertEqual(leftValue, 10)
+		
+		var plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(plus, 10)
+		
+		var rightValue = viewModel.didTapButton(buttonValue: "5")
+		
+		XCTAssertEqual(rightValue, 5)
+		
+		let minus = viewModel.didTapButton(buttonValue: "-")
+		
+		XCTAssertEqual(minus, 15)
+		
+		rightValue = viewModel.didTapButton(buttonValue: "2")
+		
+		XCTAssertEqual(rightValue, 2)
+		
+		plus = viewModel.didTapButton(buttonValue: "+")
+		
+		XCTAssertEqual(plus, 13)
+		
+		rightValue = viewModel.didTapButton(buttonValue: "5")
+		
+		XCTAssertEqual(rightValue, 5)
+		
+		let equals = viewModel.didTapButton(buttonValue: "=")
+		
+		XCTAssertEqual(equals, 18)
 	}
 }

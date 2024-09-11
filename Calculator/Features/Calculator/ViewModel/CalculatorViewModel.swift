@@ -11,6 +11,10 @@ enum ActionType {
 	case plus, multiply, minus, percent, toggleSign, comma, divide, clear, calc
 }
 
+protocol CalculatorViewModelDelegate {
+	func onActionChanges(_ newAction: ActionType?)
+}
+
 class CalculatorViewModel {
 	private let numbers: [String : Int] = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
 	private let actions = [
@@ -28,8 +32,14 @@ class CalculatorViewModel {
 	
 	private var leftValue: Double = 0
 	private var rightValue: Double = 0
-	private var currentAction: ActionType? = nil
+	private var currentAction: ActionType? = nil {
+		willSet {
+			delegate?.onActionChanges(newValue)
+		}
+	}
 	private var lastOperation: (Double, ActionType)? = nil
+	
+	var delegate: CalculatorViewModelDelegate? = nil
 	
 	func didTapButton(buttonValue: String) -> Double {
 		let currentValue = getCurrentValue()
@@ -67,6 +77,7 @@ class CalculatorViewModel {
 			currentAction = nil
 			rightValue = 0
 			leftValue = 0
+			lastOperation = nil
 			
 			return leftValue
 		} else if (action == ActionType.calc) {
@@ -93,7 +104,12 @@ class CalculatorViewModel {
 		
 		if (currentAction == ActionType.divide || currentAction == ActionType.minus || currentAction == ActionType.multiply || currentAction == ActionType.plus) {
 			if (action != nil) {
-				let newValue = calcResult(leftNumber: leftValue, rightNumber: rightValue, action: action!)
+				if (rightValue == 0) {
+					currentAction = action
+					return leftValue
+				}
+				
+				let newValue = calcResult(leftNumber: leftValue, rightNumber: rightValue, action: currentAction!)
 				leftValue = newValue
 				currentAction = action
 				rightValue = 0
@@ -159,7 +175,7 @@ class CalculatorViewModel {
 		case .plus:
 			leftNumber + rightNumber
 		case .divide:
-			leftNumber / rightNumber
+			leftNumber == 0 ? 0 : leftNumber / rightNumber
 		case .minus:
 			leftNumber - rightNumber
 		case .multiply:

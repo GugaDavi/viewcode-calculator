@@ -26,6 +26,7 @@ class CalculatorButtonView: UIView {
 	static var elementWidth = (UIScreen.main.bounds.width - 5 * 16) / 4
 	
 	weak var delegate: CalculatorButtonViewDelegate?
+	var isSelected = false
 	
 	init() {
 		super.init(frame: .zero)
@@ -40,10 +41,43 @@ class CalculatorButtonView: UIView {
 	@objc
 	private func onTap(sender: UIButton) {
 		delegate?.didTapButton(sender)
+		runAnimation()
 	}
 	
 	func updateTitle(_ newTitle: String) {
 		button.setTitle(newTitle, for: .normal)
+	}
+	
+	func runSelectButtonAnimation() {
+		isSelected = !isSelected
+		let currentBackgroundColor = backgroundColor
+		let currentButtonTextColor = button.currentTitleColor
+		
+		UIView.animate(withDuration: 0.2, animations:  {
+			self.backgroundColor = currentButtonTextColor
+			self.button.setTitleColor(currentBackgroundColor, for: .normal)
+		})
+	}
+	
+	private func runAnimation() {
+		let currentBackgroundColor = backgroundColor
+		if backgroundColor == .darkGray {
+			UIView.animate(withDuration: 0.2, animations:  {
+				self.backgroundColor = .white.withAlphaComponent(0.7)
+			}, completion: { finished in
+				UIView.animate(withDuration: 0.2) {
+					self.backgroundColor = currentBackgroundColor
+				}
+			})
+		} else if backgroundColor == .lightGray {
+			UIView.animate(withDuration: 0.2, animations:  {
+				self.backgroundColor = .white.withAlphaComponent(0.8)
+			}, completion: { finished in
+				UIView.animate(withDuration: 0.2) {
+					self.backgroundColor = currentBackgroundColor
+				}
+			})
+		}
 	}
 	
 	func setup(
@@ -65,7 +99,7 @@ class CalculatorButtonView: UIView {
 			
 		} else {
 			NSLayoutConstraint.activate([
-				button.leadingAnchor.constraint(equalTo: leadingAnchor),
+				button.titleLabel!.leadingAnchor.constraint(equalTo: button.leadingAnchor, constant: 24),
 			])
 		}
 		
